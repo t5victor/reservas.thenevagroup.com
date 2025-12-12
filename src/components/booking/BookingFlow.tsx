@@ -219,35 +219,55 @@ export const BookingFlow = () => {
             )}
 
             {step === 1 && (
-              <div className="grid gap-6 lg:grid-cols-[1.4fr,0.8fr]">
-                <div className="rounded-lg border border-zinc-800 bg-zinc-950/30 p-4">
-                  <p className="text-xs uppercase text-zinc-500">Calendario disponible</p>
-                  <Calendar
-                    selected={data.selectedDate}
-                    onSelect={(date) => updateField('selectedDate', date)}
-                    disabled={{ before: new Date() }}
-                    initialFocus
-                    className="mt-2 rounded-lg border border-zinc-800"
-                  />
+              <div className="grid gap-6 lg:grid-cols-2">
+                <div className="rounded-xl border border-zinc-800 bg-zinc-950/40 p-6 flex flex-col gap-6 min-h-[520px]">
+                  <div className="flex items-start gap-4">
+                    <div>
+                      <p className="text-xs uppercase text-zinc-500">Calendario disponible</p>
+                      <p className="text-sm text-zinc-400">Selecciona el día de la sesión de arranque.</p>
+                    </div>
+                  </div>
+                  <div className="flex-1">
+                    <Calendar
+                      captionLayout="dropdown-buttons"
+                      startMonth={new Date()}
+                      defaultMonth={data.selectedDate ?? new Date()}
+                      selected={data.selectedDate}
+                      onSelect={(date) => updateField('selectedDate', date)}
+                      disabled={{ before: new Date() }}
+                      initialFocus
+                      className="w-full h-full"
+                    />
+                  </div>
                 </div>
-                <div className="rounded-lg border border-zinc-800 bg-zinc-950/30 p-4">
-                  <p className="text-xs uppercase text-zinc-500">Horarios (UTC local)</p>
-                  <p className="text-sm text-zinc-400 mt-1">Bloques de 45 minutos para la sesión de kickoff.</p>
-                  <div className="mt-4 space-y-2">
+                <div className="rounded-xl border border-zinc-800 bg-zinc-950/40 p-5 flex flex-col">
+                  <div className="flex items-start justify-between gap-4">
+                    <div>
+                      <p className="text-xs uppercase text-zinc-500">Horarios (UTC local)</p>
+                      <p className="text-sm text-zinc-400">Bloques de 45 minutos para revisar alcance, presupuesto y plan.</p>
+                    </div>
+                    {data.selectedTime && (
+                      <span className="text-xs font-medium text-zinc-300">{data.selectedTime} h</span>
+                    )}
+                  </div>
+                  <div className="mt-4 space-y-2 flex-1">
                     {timeSlots.map((slot) => (
                       <button
                         key={slot}
                         type="button"
                         disabled={!data.selectedDate}
                         onClick={() => updateField('selectedTime', slot)}
-                        className={`w-full rounded-md border px-4 py-3 text-left text-sm font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-100 ${
-                          data.selectedTime === slot ? 'border-zinc-100 bg-zinc-100 text-zinc-900' : 'border-zinc-800 text-zinc-100'
+                        className={`w-full rounded-lg border px-4 py-3 text-left text-sm font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-100 ${
+                          data.selectedTime === slot
+                            ? 'border-zinc-100 bg-zinc-100 text-zinc-900'
+                            : 'border-zinc-800 text-zinc-100 hover:border-zinc-600'
                         } ${!data.selectedDate ? 'opacity-40 cursor-not-allowed' : ''}`}
                       >
                         {slot} h
                       </button>
                     ))}
                   </div>
+                  <p className="mt-4 text-xs text-zinc-500">Mostramos tu zona horaria. Tras confirmar enviaremos invitación con enlace.</p>
                 </div>
               </div>
             )}
