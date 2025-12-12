@@ -130,7 +130,7 @@ export const BookingFlow = () => {
               <h1 className="text-lg font-medium text-white">Reserva con presupuestos definidos</h1>
               <p className="text-sm text-zinc-400">Cada paso se completa dentro de esta tarjeta. Sin sorpresas ni costes ocultos.</p>
             </div>
-            <ol className="space-y-4">
+            <ol className="hidden md:space-y-4 md:block">
               {steps.map((item, index) => {
                 const isDone = index < step;
                 const isActive = index === step;
@@ -198,7 +198,7 @@ export const BookingFlow = () => {
                           <h3 className={`text-xl font-semibold ${isActive ? 'text-zinc-900' : 'text-white'}`}>{service.title}</h3>
                           <p className={`text-sm ${isActive ? 'text-zinc-600' : 'text-zinc-400'}`}>{service.description}</p>
                         </div>
-                        <div className="text-sm text-right">
+                        <div className="text-sm text-left md:text-right">
                           <p className={`font-semibold ${isActive ? 'text-zinc-900' : 'text-zinc-100'}`}>{service.setup}</p>
                           <p className={`${isActive ? 'text-zinc-700' : 'text-zinc-400'}`}>{service.retainer}</p>
                         </div>
