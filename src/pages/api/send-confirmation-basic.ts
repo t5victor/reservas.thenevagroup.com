@@ -35,11 +35,31 @@ export const POST: APIRoute = async ({ request }) => {
 
   sgMail.setApiKey(apiKey);
 
-  const text = `Reserva confirmada\n\nServicio: ${serviceTitle ?? ''}\nFecha: ${date ?? ''} ${time ?? ''}\nContacto: ${name ?? ''} (${email})`;
-  const html = `<p><strong>Reserva confirmada</strong></p>
+  // Carga opcional de plantilla externa para no hardcodear HTML aquí.
+  const templateUrl = process.env.SENDGRID_TEMPLATE_URL;
+  let html = `<p><strong>Reserva confirmada</strong></p>
   <p>Servicio: ${serviceTitle ?? ''}</p>
   <p>Fecha: ${date ?? ''} ${time ?? ''}</p>
   <p>Contacto: ${name ?? ''} (${email})</p>`;
+
+  if (templateUrl) {
+    try {
+      const res = await fetch(templateUrl);
+      if (res.ok) {
+        html = await res.text();
+      } else {
+        console.warn('No se pudo cargar la plantilla externa:', res.status);
+      }
+    } catch (err) {
+      console.warn('Error cargando plantilla externa', err);
+    }
+  }
+
+  const text = `Reserva confirmada
+
+Servicio: ${serviceTitle ?? ''}
+Fecha: ${date ?? ''} ${time ?? ''}
+Contacto: ${name ?? ''} (${email})`;
 
   try {
     const [res] = await sgMail.send({

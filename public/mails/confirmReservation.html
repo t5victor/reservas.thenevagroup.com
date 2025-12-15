@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Reserva confirmada · The Neva Group</title>
+    <style>
+      /* Email-safe reset */
+      body, table, td, p, a { font-family: "Helvetica Neue", Arial, sans-serif; }
+      body { margin: 0; padding: 0; background: #0c0a09; color: #e7e5e4; }
+      table { border-collapse: collapse; }
+      img { border: 0; display: block; }
+      a { color: inherit; text-decoration: none; }
+      .container {
+        width: 100%;
+        background: #0c0a09;
+        padding: 32px 0;
+      }
+      .card {
+        width: 100%;
+        max-width: 620px;
+        margin: 0 auto;
+        background: #ffffff;
+        border: 1px solid #e7e5e4;
+        border-radius: 18px;
+        overflow: hidden;
+        color: #1c1917;
+      }
+      .header {
+        padding: 28px 32px 12px;
+      }
+      .logo {
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        font-size: 13px;
+        color: #57534e;
+      }
+      .title {
+        margin: 14px 0 4px;
+        font-size: 24px;
+        color: #1c1917;
+        font-weight: 700;
+      }
+      .subtitle {
+        margin: 0;
+        font-size: 14px;
+        color: #57534e;
+      }
+      .banner {
+        width: 100%;
+        height: 180px;
+        background: url('https://reservas.thenevagroup.com/ReservaConfirmada.svg') center/cover no-repeat;
+        padding: 0;
+        line-height: 0;
+      }
+      .section {
+        padding: 28px 32px 0;
+      }
+      .body-text {
+        margin: 0 0 16px;
+        font-size: 14px;
+        line-height: 1.7;
+        color: #1c1917;
+        text-align: justify;
+      }
+      .body-text strong { color: #0f172a; }
+      .cta-wrap {
+        padding: 24px 32px 32px;
+      }
+      .button {
+        display: inline-block;
+        padding: 14px 22px;
+        background: #1c1917;
+        color: #f5f5f4;
+        font-weight: 700;
+        font-size: 15px;
+        border-radius: 10px;
+        border: 1px solid #1c1917;
+        letter-spacing: 0.02em;
+      }
+      .footer {
+        padding: 0 32px 26px;
+        font-size: 12px;
+        color: #57534e;
+        line-height: 1.6;
+      }
+      @media (max-width: 640px) {
+        .card { border-radius: 14px; }
+        .header, .section, .cta-wrap, .footer { padding: 20px 18px; }
+        .banner { height: 140px; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <table class="card" role="presentation">
+        <tr>
+          <td class="header">
+            <div class="logo">The Neva Group</div>
+            <div class="title">Reserva confirmada</div>
+            <p class="subtitle">Hemos bloqueado tu sesión. Aquí tienes el resumen:</p>
+          </td>
+        </tr>
+        <tr>
+          <td class="banner" aria-label="Reservas - The Neva Group"></td>
+        </tr>
+        <tr>
+          <td class="section">
+            <p class="body-text">
+              Hola <strong>{{name}}</strong>, confirmamos tu reserva para el servicio <strong>{{serviceTitle}}</strong>
+              ({{serviceDescription}}). Hemos bloqueado la agenda para el <strong>{{date}}</strong> a las <strong>{{time}}</strong>.
+            </p>
+            <p class="body-text">
+              Usaremos el correo <strong>{{email}}</strong> para enviarte la invitación y los detalles logísticos. Si necesitas
+              mover la fecha u hora, responde a este mensaje y lo ajustamos.
+            </p>
+            <p class="body-text">
+              Notas del proyecto: {{notes}}
+            </p>
+          </td>
+        </tr>
+        <tr>
+          
+        </tr>
+        <tr>
+          <td class="footer">
+            The Neva Group · Reserva de sesión inicial.<br/>
+            Si necesitas mover la fecha u hora, responde a este correo o contáctanos en WhatsApp.
+          </td>
+        </tr>
+      </table>
+    </div>
+  </body>
+</html>
