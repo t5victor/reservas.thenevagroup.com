@@ -70,6 +70,7 @@ export const BookingFlow = () => {
     email: '',
     notes: '',
   });
+  const [submitted, setSubmitted] = useState(false);
 
   const selectedService = useMemo(
     () => services.find((service) => service.id === data.serviceId) ?? services[0],
@@ -95,11 +96,15 @@ export const BookingFlow = () => {
 
   const goNext = () => {
     if (step < steps.length - 1 && stepIsValid) {
+      setSubmitted(false);
       setStep((current) => current + 1);
     }
   };
 
-  const goPrev = () => setStep((current) => Math.max(0, current - 1));
+  const goPrev = () => {
+    setSubmitted(false);
+    setStep((current) => Math.max(0, current - 1));
+  };
 
   const updateField = (field: keyof BookingData, value: string | Date | undefined) => {
     setData((prev) => ({
@@ -117,14 +122,20 @@ export const BookingFlow = () => {
       email: '',
       notes: '',
     });
+    setSubmitted(false);
     setStep(0);
+  };
+
+  const handleConfirm = () => {
+    if (!stepIsValid) return;
+    setSubmitted(true);
   };
 
   return (
     <div className="w-full max-w-5xl mx-auto">
-      <article className="bg-zinc-900 text-zinc-100 rounded-xl border border-zinc-800 shadow-[0_20px_120px_rgba(0,0,0,0.55)]">
+      <article className="bg-stone-900 text-stone-100 rounded-xl border border-stone-800 shadow-[0_20px_120px_rgba(0,0,0,0.55)]">
         <div className="flex flex-col md:flex-row">
-          <aside className="md:w-64 border-b md:border-b-0 md:border-r border-zinc-800 p-6 space-y-6 bg-zinc-950/40">
+          <aside className="md:w-64 border-b md:border-b-0 md:border-r border-stone-800 p-6 space-y-6 bg-stone-900/50">
             <div className="space-y-1">
               <p className="text-xs uppercase text-zinc-500">The Neva Group</p>
               <h1 className="text-lg font-medium text-white">Reserva con presupuestos definidos</h1>
@@ -139,7 +150,7 @@ export const BookingFlow = () => {
                     <span
                       aria-hidden="true"
                       className={`mt-2 block h-3 w-3 shrink-0 rounded-full border transition ${
-                        isActive ? 'border-white bg-white' : 'border-zinc-600'
+                        isActive ? 'border-white bg-white' : 'border-stone-600'
                       } ${isDone && !isActive ? 'opacity-70' : ''}`}
                     />
                     <div>
@@ -150,14 +161,14 @@ export const BookingFlow = () => {
                 );
               })}
             </ol>
-            <div className="rounded-lg border border-zinc-800 bg-zinc-950/60 p-4 text-xs text-zinc-400 space-y-2">
+            <div className="rounded-lg border border-stone-800 bg-stone-900/60 p-4 text-xs text-zinc-400 space-y-2">
               <p className="font-semibold text-zinc-200">Servicio general incluido</p>
               <p>Dominio, hosting, correo y soporte esencial gestionado por nuestro equipo durante todo el proyecto.</p>
             </div>
           </aside>
 
           <div className="flex-1 p-6 md:p-8 space-y-6">
-            <header className="space-y-2 border-b border-zinc-800 pb-4">
+            <header className="space-y-2 border-b border-stone-800 pb-4">
               <p className="text-xs uppercase text-zinc-500">
                 Paso {step + 1} de {steps.length}
               </p>
@@ -167,9 +178,9 @@ export const BookingFlow = () => {
                   <p className="text-sm text-zinc-400">{steps[step].subtitle}</p>
                 </div>
                 <div className="flex-1 hidden sm:block">
-                  <div className="h-1 rounded-full bg-zinc-800">
+                  <div className="h-1 rounded-full bg-stone-800">
                     <div
-                      className="h-1 rounded-full bg-zinc-100"
+                      className="h-1 rounded-full bg-stone-100"
                       style={{ width: `${progress}%` }}
                     />
                   </div>
@@ -187,7 +198,7 @@ export const BookingFlow = () => {
                       key={service.id}
                       onClick={() => updateField('serviceId', service.id)}
                       className={`w-full text-left rounded-lg border px-5 py-4 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-200 ${
-                        isActive ? 'border-zinc-100 bg-zinc-50 text-zinc-900' : 'border-zinc-800 bg-zinc-900'
+                        isActive ? 'border-zinc-100 bg-zinc-50 text-zinc-900' : 'border-stone-800 bg-stone-900'
                       }`}
                     >
                       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
@@ -220,7 +231,7 @@ export const BookingFlow = () => {
 
             {step === 1 && (
               <div className="grid gap-6 lg:grid-cols-2">
-                <div className="rounded-xl border border-zinc-800 bg-zinc-950/40 p-6 flex flex-col gap-6 min-h-[520px]">
+                <div className="rounded-xl border border-stone-800 bg-stone-900/50 p-6 flex flex-col gap-6 min-h-[520px]">
                   <div className="flex items-start gap-4">
                     <div>
                       <p className="text-xs uppercase text-zinc-500">Calendario disponible</p>
@@ -240,7 +251,7 @@ export const BookingFlow = () => {
                     />
                   </div>
                 </div>
-                <div className="rounded-xl border border-zinc-800 bg-zinc-950/40 p-5 flex flex-col">
+                <div className="rounded-xl border border-stone-800 bg-stone-900/50 p-5 flex flex-col">
                   <div className="flex items-start justify-between gap-4">
                     <div>
                       <p className="text-xs uppercase text-zinc-500">Horarios (UTC local)</p>
@@ -259,8 +270,8 @@ export const BookingFlow = () => {
                         onClick={() => updateField('selectedTime', slot)}
                         className={`w-full rounded-lg border px-4 py-3 text-left text-sm font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-100 ${
                           data.selectedTime === slot
-                            ? 'border-zinc-100 bg-zinc-100 text-zinc-900'
-                            : 'border-zinc-800 text-zinc-100 hover:border-zinc-600'
+                            ? 'border-stone-100 bg-stone-100 text-stone-900'
+                            : 'border-stone-800 text-zinc-100 hover:border-stone-600'
                         } ${!data.selectedDate ? 'opacity-40 cursor-not-allowed' : ''}`}
                       >
                         {slot} h
@@ -282,7 +293,7 @@ export const BookingFlow = () => {
                       value={data.name}
                       onChange={(event) => updateField('name', event.target.value)}
                       placeholder="Nombre y apellidos"
-                      className="mt-2 w-full rounded-md border border-zinc-800 bg-transparent px-4 py-3 text-base text-white placeholder:text-zinc-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-100"
+                      className="mt-2 w-full rounded-md border border-stone-800 bg-transparent px-4 py-3 text-base text-white placeholder:text-zinc-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-100"
                     />
                   </label>
                   <label className="text-sm text-zinc-400">
@@ -292,7 +303,7 @@ export const BookingFlow = () => {
                       value={data.email}
                       onChange={(event) => updateField('email', event.target.value)}
                       placeholder="equipo@empresa.com"
-                      className="mt-2 w-full rounded-md border border-zinc-800 bg-transparent px-4 py-3 text-base text-white placeholder:text-zinc-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-100"
+                      className="mt-2 w-full rounded-md border border-stone-800 bg-transparent px-4 py-3 text-base text-white placeholder:text-zinc-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-100"
                     />
                   </label>
                 </div>
@@ -303,7 +314,7 @@ export const BookingFlow = () => {
                     value={data.notes}
                     onChange={(event) => updateField('notes', event.target.value)}
                     placeholder="Ej. Necesitamos lanzar una web bilingüe con blog y fichas de servicio."
-                    className="mt-2 w-full rounded-md border border-zinc-800 bg-transparent px-4 py-3 text-base text-white placeholder:text-zinc-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-100"
+                    className="mt-2 w-full rounded-md border border-stone-800 bg-transparent px-4 py-3 text-base text-white placeholder:text-zinc-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-100"
                   />
                 </label>
                 <p className="text-xs text-zinc-500">Usaremos estos datos para enviar la propuesta y compartir accesos.</p>
@@ -312,36 +323,51 @@ export const BookingFlow = () => {
 
             {step === 3 && (
               <div className="grid gap-4 md:grid-cols-2">
-                <div className="rounded-lg border border-zinc-800 bg-zinc-950/30 p-4 space-y-1">
+                <div className="rounded-lg border border-stone-800 bg-stone-900/30 p-4 space-y-1">
                   <p className="text-xs uppercase text-zinc-500">Paquete</p>
                   <h3 className="text-lg font-semibold text-white">{selectedService?.title}</h3>
                   <p className="text-sm text-zinc-400">{selectedService?.description}</p>
                   <p className="text-sm text-zinc-100">{selectedService?.setup}</p>
                   <p className="text-xs text-zinc-500">{selectedService?.retainer}</p>
                 </div>
-                <div className="rounded-lg border border-zinc-800 bg-zinc-950/30 p-4 space-y-1">
+                <div className="rounded-lg border border-stone-800 bg-stone-900/30 p-4 space-y-1">
                   <p className="text-xs uppercase text-zinc-500">Agenda</p>
                   <h3 className="text-lg font-semibold text-white">{formatDate(data.selectedDate)}</h3>
                   <p className="text-sm text-zinc-400">Horario: {data.selectedTime || 'Sin definir'}</p>
                   <p className="text-xs text-zinc-500">La reunión se realiza vía videollamada con seguimiento grabado.</p>
                 </div>
-                <div className="rounded-lg border border-zinc-800 bg-zinc-950/30 p-4 space-y-1">
+                <div className="rounded-lg border border-stone-800 bg-stone-900/30 p-4 space-y-1">
                   <p className="text-xs uppercase text-zinc-500">Contacto</p>
                   <h3 className="text-lg font-semibold text-white">{data.name || 'Pendiente'}</h3>
                   <p className="text-sm text-zinc-400">{data.email || 'Sin correo'}</p>
                 </div>
-                <div className="rounded-lg border border-zinc-800 bg-zinc-950/30 p-4 space-y-1">
+                <div className="rounded-lg border border-stone-800 bg-stone-900/30 p-4 space-y-1">
                   <p className="text-xs uppercase text-zinc-500">Notas</p>
                   <p className="text-sm text-zinc-200">
                     {data.notes || 'Incluiremos un formulario adicional para capturar materiales antes del arranque.'}
                   </p>
                 </div>
+                {submitted && (
+                  <div className="md:col-span-2 rounded-lg border border-stone-700 bg-stone-900/50 p-4 flex items-start gap-3">
+                    <div className="mt-1 inline-flex h-8 w-8 items-center justify-center rounded-full bg-stone-800 text-stone-100">
+                      ✓
+                    </div>
+                    <div className="space-y-1">
+                      <p className="text-sm font-semibold text-white">Reserva enviada</p>
+                      <p className="text-sm text-zinc-300">
+                        Hemos registrado tu cita para {formatDate(data.selectedDate)} a las {data.selectedTime || 'pendiente'}.
+                        Te enviaremos confirmación a {data.email || 'tu correo'}.
+                      </p>
+                      <p className="text-xs text-zinc-500">Si necesitas ajustar fecha u horario, responde al correo de confirmación.</p>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
           </div>
         </div>
 
-        <footer className="flex flex-col gap-4 border-t border-zinc-800 bg-zinc-950/50 px-6 py-5 md:flex-row md:items-center md:justify-between">
+        <footer className="flex flex-col gap-4 border-t border-stone-800 bg-stone-900/50 px-6 py-5 md:flex-row md:items-center md:justify-between">
           <div>
             <p className="text-sm font-semibold text-white">{selectedService?.title}</p>
             <p className="text-sm text-zinc-400">{selectedService?.setup} · {selectedService?.retainer}</p>
@@ -353,8 +379,8 @@ export const BookingFlow = () => {
               disabled={step === 0}
               className={`rounded-md border px-4 py-2 text-sm font-medium transition ${
                 step === 0
-                  ? 'border-zinc-800 text-zinc-600 cursor-not-allowed'
-                  : 'border-zinc-700 text-white hover:border-zinc-500'
+                  ? 'border-stone-800 text-zinc-600 cursor-not-allowed'
+                  : 'border-stone-700 text-white hover:border-stone-500'
               }`}
             >
               Volver
@@ -365,7 +391,7 @@ export const BookingFlow = () => {
                 onClick={goNext}
                 disabled={!stepIsValid}
                 className={`rounded-md px-5 py-2 text-sm font-semibold text-zinc-950 transition ${
-                  stepIsValid ? 'bg-zinc-100 hover:bg-white' : 'bg-zinc-700 cursor-not-allowed text-zinc-300'
+                  stepIsValid ? 'bg-stone-100 hover:bg-stone-50' : 'bg-stone-700 cursor-not-allowed text-zinc-300'
                 }`}
               >
                 Continuar
@@ -373,10 +399,17 @@ export const BookingFlow = () => {
             ) : (
               <button
                 type="button"
-                onClick={() => alert('Reserva enviada. Nos pondremos en contacto en breve.')}
-                className="rounded-md bg-zinc-100 px-5 py-2 text-sm font-semibold text-zinc-950 hover:bg-white"
+                onClick={handleConfirm}
+                disabled={!stepIsValid || submitted}
+                className={`rounded-md px-5 py-2 text-sm font-semibold text-zinc-950 transition ${
+                  submitted
+                    ? 'bg-stone-800 text-zinc-400 cursor-not-allowed'
+                    : stepIsValid
+                      ? 'bg-stone-100 hover:bg-stone-50'
+                      : 'bg-stone-700 cursor-not-allowed text-zinc-300'
+                }`}
               >
-                Confirmar reserva
+                {submitted ? 'Reserva enviada' : 'Confirmar reserva'}
               </button>
             )}
           </div>
