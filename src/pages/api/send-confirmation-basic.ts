@@ -3,9 +3,16 @@ import sgMail from '@sendgrid/mail';
 
 export const prerender = false;
 
+const applyTemplate = (html: string, data: Record<string, string | undefined>) =>
+  Object.entries(data).reduce((acc, [key, value]) => {
+    const safe = value ?? '';
+    return acc.replace(new RegExp(`{{\\s*${key}\\s*}}`, 'g'), safe);
+  }, html);
+
 export const POST: APIRoute = async ({ request }) => {
   const apiKey = process.env.SENDGRID_API_KEY;
   const from = process.env.SENDGRID_FROM;
+  const templateUrl = process.env.SENDGRID_TEMPLATE_URL?.trim();
 
   if (!apiKey || !from) {
     return new Response(JSON.stringify({ error: 'Faltan SENDGRID_API_KEY o SENDGRID_FROM.' }), {
@@ -36,7 +43,6 @@ export const POST: APIRoute = async ({ request }) => {
   sgMail.setApiKey(apiKey);
 
   // Carga opcional de plantilla externa para no hardcodear HTML aquí.
-  const templateUrl = process.env.SENDGRID_TEMPLATE_URL;
   let html = `<p><strong>Reserva confirmada</strong></p>
   <p>Servicio: ${serviceTitle ?? ''}</p>
   <p>Fecha: ${date ?? ''} ${time ?? ''}</p>
@@ -46,7 +52,17 @@ export const POST: APIRoute = async ({ request }) => {
     try {
       const res = await fetch(templateUrl);
       if (res.ok) {
-        html = await res.text();
+        const raw = await res.text();
+        html = applyTemplate(raw, {
+          name,
+          email,
+          serviceTitle,
+          serviceDescription,
+          date,
+          time,
+          notes,
+          ctaUrl: payload.ctaUrl,
+        });
       } else {
         console.warn('No se pudo cargar la plantilla externa:', res.status);
       }
