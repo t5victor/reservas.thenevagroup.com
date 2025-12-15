@@ -1,5 +1,6 @@
 import type { APIRoute } from 'astro';
 import sgMail from '@sendgrid/mail';
+import confirmTemplate from '../../mails/confirmReservation.html?raw';
 
 export const prerender = false;
 
@@ -43,26 +44,13 @@ export const POST: APIRoute = async ({ request }) => {
   sgMail.setApiKey(apiKey);
 
   // Carga opcional de plantilla externa para no hardcodear HTML aquí.
-  let html = `<p><strong>Reserva confirmada</strong></p>
-  <p>Servicio: ${serviceTitle ?? ''}</p>
-  <p>Fecha: ${date ?? ''} ${time ?? ''}</p>
-  <p>Contacto: ${name ?? ''} (${email})</p>`;
+  let htmlTemplate = confirmTemplate;
 
   if (templateUrl) {
     try {
       const res = await fetch(templateUrl);
       if (res.ok) {
-        const raw = await res.text();
-        html = applyTemplate(raw, {
-          name,
-          email,
-          serviceTitle,
-          serviceDescription,
-          date,
-          time,
-          notes,
-          ctaUrl: payload.ctaUrl,
-        });
+        htmlTemplate = await res.text();
       } else {
         console.warn('No se pudo cargar la plantilla externa:', res.status);
       }
@@ -70,6 +58,17 @@ export const POST: APIRoute = async ({ request }) => {
       console.warn('Error cargando plantilla externa', err);
     }
   }
+
+  const html = applyTemplate(htmlTemplate, {
+    name,
+    email,
+    serviceTitle,
+    serviceDescription,
+    date,
+    time,
+    notes: payload.notes,
+    ctaUrl: payload.ctaUrl,
+  });
 
   const text = `Reserva confirmada
 
