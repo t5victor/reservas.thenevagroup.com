@@ -32,7 +32,7 @@ export const POST: APIRoute = async ({ request }) => {
     });
   }
 
-  const { name, email, serviceTitle, date, time } = payload;
+  const { name, email, serviceTitle, serviceDescription, date, time, notes, ctaUrl } = payload;
 
   if (!email) {
     return new Response(JSON.stringify({ error: 'Falta el correo destino.' }), {
@@ -66,8 +66,8 @@ export const POST: APIRoute = async ({ request }) => {
     serviceDescription,
     date,
     time,
-    notes: payload.notes,
-    ctaUrl: payload.ctaUrl,
+    notes,
+    ctaUrl,
   });
 
   const text = `Reserva confirmada
