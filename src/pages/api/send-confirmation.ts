@@ -79,15 +79,17 @@ export const POST: APIRoute = async ({ request }) => {
   sgMail.setApiKey(apiKey);
 
   try {
-    await sgMail.send({
+    const [response] = await sgMail.send({
       to: email,
       from,
       subject: `Reserva confirmada - ${serviceTitle}`,
       html,
       text,
     });
+    console.info('SendGrid response:', response.statusCode, response.headers['x-message-id'] || '');
   } catch (error) {
-    console.error('SendGrid error', error);
+    const detail = (error as any)?.response?.body || (error as Error).message || 'SendGrid error';
+    console.error('SendGrid error', detail);
     return new Response(JSON.stringify({ error: 'No se pudo enviar el correo.' }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' },
