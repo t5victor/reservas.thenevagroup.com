@@ -71,6 +71,8 @@ export const BookingFlow = () => {
     notes: '',
   });
   const [submitted, setSubmitted] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const selectedService = useMemo(
     () => services.find((service) => service.id === data.serviceId) ?? services[0],
@@ -96,12 +98,14 @@ export const BookingFlow = () => {
 
   const goNext = () => {
     if (step < steps.length - 1 && stepIsValid) {
+      setSubmitError(null);
       setSubmitted(false);
       setStep((current) => current + 1);
     }
   };
 
   const goPrev = () => {
+    setSubmitError(null);
     setSubmitted(false);
     setStep((current) => Math.max(0, current - 1));
   };
@@ -123,12 +127,48 @@ export const BookingFlow = () => {
       notes: '',
     });
     setSubmitted(false);
+    setSubmitError(null);
     setStep(0);
   };
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     if (!stepIsValid) return;
-    setSubmitted(true);
+    if (!data.email || !data.name || !data.selectedDate || !data.selectedTime) {
+      setSubmitError('Faltan datos para enviar la confirmación.');
+      return;
+    }
+
+    setSubmitError(null);
+    setSending(true);
+
+    try {
+      const response = await fetch('/api/send-confirmation', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: data.name,
+          email: data.email,
+          serviceTitle: selectedService?.title,
+          serviceDescription: selectedService?.description,
+          date: formatDate(data.selectedDate),
+          time: data.selectedTime,
+          notes: data.notes || 'Sin notas adicionales',
+          ctaUrl: 'https://reservas.thenevagroup.com',
+        }),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(errorText || 'No se pudo enviar el correo.');
+      }
+
+      setSubmitted(true);
+    } catch (error) {
+      console.error('Error enviando confirmación', error);
+      setSubmitError('No hemos podido enviar el correo de confirmación. Inténtalo en unos minutos.');
+    } finally {
+      setSending(false);
+    }
   };
 
   return (
@@ -347,6 +387,11 @@ export const BookingFlow = () => {
                     {data.notes || 'Incluiremos un formulario adicional para capturar materiales antes del arranque.'}
                   </p>
                 </div>
+                {submitError && (
+                  <div className="md:col-span-2 rounded-lg border border-red-900/60 bg-red-900/20 p-4 text-sm text-red-100">
+                    {submitError}
+                  </div>
+                )}
                 {submitted && (
                   <div className="md:col-span-2 rounded-lg border border-stone-700 bg-stone-900/50 p-4 flex items-start gap-3">
                     <div className="mt-1 inline-flex h-8 w-8 items-center justify-center rounded-full bg-stone-800 text-stone-100">
@@ -400,16 +445,18 @@ export const BookingFlow = () => {
               <button
                 type="button"
                 onClick={handleConfirm}
-                disabled={!stepIsValid || submitted}
+                disabled={!stepIsValid || submitted || sending}
                 className={`rounded-md px-5 py-2 text-sm font-semibold text-zinc-950 transition ${
                   submitted
                     ? 'bg-stone-800 text-zinc-400 cursor-not-allowed'
-                    : stepIsValid
-                      ? 'bg-stone-100 hover:bg-stone-50'
-                      : 'bg-stone-700 cursor-not-allowed text-zinc-300'
+                    : sending
+                      ? 'bg-stone-800 text-zinc-200 cursor-progress'
+                      : stepIsValid
+                        ? 'bg-stone-100 hover:bg-stone-50'
+                        : 'bg-stone-700 cursor-not-allowed text-zinc-300'
                 }`}
               >
-                {submitted ? 'Reserva enviada' : 'Confirmar reserva'}
+                {submitted ? 'Reserva enviada' : sending ? 'Enviando...' : 'Confirmar reserva'}
               </button>
             )}
           </div>
