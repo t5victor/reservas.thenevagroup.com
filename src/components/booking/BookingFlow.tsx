@@ -179,7 +179,7 @@ export const BookingFlow = () => {
             <div className="space-y-1">
               <p className="text-xs uppercase text-zinc-500">The Neva Group</p>
               <h1 className="text-lg font-medium text-white">Reserva con presupuestos definidos</h1>
-              <p className="text-sm text-zinc-400">Cada paso se completa dentro de esta tarjeta. Sin sorpresas ni costes ocultos.</p>
+              <p className="text-sm text-zinc-400">Cada paso se completa dentro de esta página.</p>
             </div>
             <ol className="hidden md:space-y-4 md:block">
               {steps.map((item, index) => {
