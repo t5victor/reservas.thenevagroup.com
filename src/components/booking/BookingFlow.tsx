@@ -142,7 +142,7 @@ export const BookingFlow = () => {
     setSending(true);
 
     try {
-      const response = await fetch('/api/send-confirmation', {
+      const response = await fetch('/api/send-confirmation-basic', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
